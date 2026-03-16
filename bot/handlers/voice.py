@@ -79,7 +79,7 @@ async def handle_voice(message: Message, transcriber: Transcriber, summarizer: S
             await asyncio.to_thread(_extract_audio, tmp.name, wav_tmp.name)
             audio_path = wav_tmp.name
 
-        text = await asyncio.to_thread(transcriber.transcribe, audio_path)
+        text = await transcriber.transcribe(audio_path)
 
         if len(text) >= SUMMARY_THRESHOLD:
             await status.edit_text("Суммаризирую...")

@@ -18,10 +18,8 @@ logger = logging.getLogger(__name__)
 async def main() -> None:
     config = load_config()
 
-    logger.info("Loading Whisper model '%s'...", config.whisper_model)
-    transcriber = Transcriber(config.whisper_model)
+    transcriber = Transcriber(config.groq_api_key)
     summarizer = Summarizer(config.xai_api_key)
-    logger.info("Whisper model loaded.")
 
     bot = Bot(token=config.telegram_bot_token)
     dp = Dispatcher()
@@ -36,6 +34,7 @@ async def main() -> None:
     try:
         await dp.start_polling(bot, allowed_updates=["message"])
     finally:
+        await transcriber.close()
         await summarizer.close()
 
 
