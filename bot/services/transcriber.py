@@ -29,11 +29,12 @@ class Transcriber:
 
         try:
             with open(audio_path, "rb") as f:
-                response = await self.client.post(
-                    API_URL,
-                    files={"file": (filename, f, content_type)},
-                    data={"model": "whisper-large-v3"},
-                )
+                file_data = f.read()
+            response = await self.client.post(
+                API_URL,
+                files={"file": (filename, file_data, content_type)},
+                data={"model": "whisper-large-v3"},
+            )
             response.raise_for_status()
             data = response.json()
             text = data.get("text", "").strip()

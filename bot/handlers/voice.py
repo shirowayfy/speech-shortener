@@ -46,7 +46,10 @@ async def _send_result(status: Message, original: Message, result: str) -> None:
         return
 
     # Split into chunks for very long messages (no summary case)
-    await status.delete()
+    try:
+        await status.delete()
+    except Exception:
+        pass
     for i in range(0, len(result), TG_MSG_LIMIT):
         await original.answer(result[i : i + TG_MSG_LIMIT])
 

@@ -12,12 +12,11 @@ SYSTEM_PROMPT = (
     "Отвечай на том же языке, на котором написан текст."
 )
 
-API_URL = "https://api.x.ai/v1/chat/completions"
+API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
 class Summarizer:
     def __init__(self, api_key: str) -> None:
-        self.api_key = api_key
         self.client = httpx.AsyncClient(
             timeout=30.0,
             headers={
@@ -28,7 +27,7 @@ class Summarizer:
 
     async def summarize(self, text: str) -> str:
         payload = {
-            "model": "grok-3-mini-fast",
+            "model": "llama-3.3-70b-versatile",
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": text},

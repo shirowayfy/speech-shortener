@@ -19,7 +19,7 @@ async def main() -> None:
     config = load_config()
 
     transcriber = Transcriber(config.groq_api_key)
-    summarizer = Summarizer(config.xai_api_key)
+    summarizer = Summarizer(config.groq_api_key)
 
     bot = Bot(token=config.telegram_bot_token)
     dp = Dispatcher()

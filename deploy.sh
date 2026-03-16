@@ -30,6 +30,15 @@ for pkg in python3 python3-pip python3-venv ffmpeg; do
     fi
 done
 
+# Создание сервисного пользователя
+SERVICE_USER="speechbot"
+if ! id -u "$SERVICE_USER" &>/dev/null; then
+    useradd -r -s /usr/sbin/nologin "$SERVICE_USER"
+    info "Пользователь $SERVICE_USER создан"
+else
+    info "Пользователь $SERVICE_USER уже существует"
+fi
+
 # ── 2. Python venv и зависимости ─────────────────────────────────────────────
 info "Настройка Python окружения..."
 
@@ -64,8 +73,8 @@ if [[ -z "${TELEGRAM_BOT_TOKEN:-}" ]]; then
     exit 1
 fi
 
-if [[ -z "${XAI_API_KEY:-}" ]]; then
-    error "XAI_API_KEY не задан в .env"
+if [[ -z "${GROQ_API_KEY:-}" ]]; then
+    error "GROQ_API_KEY не задан в .env"
     exit 1
 fi
 
@@ -81,6 +90,7 @@ After=network.target
 
 [Service]
 Type=simple
+User=$SERVICE_USER
 WorkingDirectory=$PROJECT_DIR
 ExecStart=$VENV_DIR/bin/python -m bot.main
 EnvironmentFile=$PROJECT_DIR/.env
@@ -95,6 +105,7 @@ systemctl daemon-reload
 info "Сервис создан: $SERVICE_FILE"
 
 # ── 5. Запуск сервиса ────────────────────────────────────────────────────────
+chown -R "$SERVICE_USER":"$SERVICE_USER" "$PROJECT_DIR"
 systemctl enable "$SERVICE_NAME"
 systemctl restart "$SERVICE_NAME"
 info "Сервис включён и запущен"
